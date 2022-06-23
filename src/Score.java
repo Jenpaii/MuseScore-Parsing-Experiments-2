@@ -1,23 +1,24 @@
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Score {
-    private ArrayList<Part> parts;
+    private Map<Integer, Part> parts = new HashMap<>();
 
     public Score() {
-        parts = new ArrayList<>();
+        parts = new HashMap<>();
     }
 
     public void addPart(Part part) {
-        parts.add(part);
+        parts.put(part.getScorePartId(), part);
     }
+    public Part getPart(int scorePartId) {
+        return parts.get(scorePartId);
+    }
+
     @Override
     public String toString() {
-        StringBuilder partBuilder = new StringBuilder();
-        for (Part part : parts) {
-            partBuilder.append(part).append("\n");
-        }
         return "Score{" +
-                "parts=" + partBuilder +
+                "parts=" + parts +
                 '}';
     }
 }

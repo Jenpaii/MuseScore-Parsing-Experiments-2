@@ -7,10 +7,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,12 +15,13 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class ScoreMaker {
+public class ScoreMaker2 {
 
     private final Score score;
 
-    public ScoreMaker() {
+    public ScoreMaker2() {
         score = new Score();
+
     }
 
     public void parseFile(String fileName) {
@@ -31,18 +29,17 @@ public class ScoreMaker {
             File inputFile = new File(fileName + ".musicxml");
             InputStream inputFileStream = new FileInputStream(inputFile);
             parseFile(".musicxml", inputFileStream);
-        } catch (IOException e) {
+        } catch (IOException | XPathExpressionException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void parseFile(String fileType, InputStream fileContent) {
+    public void parseFile(String fileType, InputStream fileContent) throws XPathExpressionException {
         Document doc = getDocument(fileType, fileContent);
         if (doc != null) {
 
-            NodeList scorePartNodes = doc.getElementsByTagName("score-part"); // This works.
-            setScoreParts(scorePartNodes); //Works.
+            setScore(doc);
 
         }
     }
@@ -51,6 +48,7 @@ public class ScoreMaker {
         try {
             InputStream inputStream = getFilesInputStream(fileType, fileContent);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setNamespaceAware(true);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             if (inputStream == null) { return null; }
             else {
@@ -80,15 +78,48 @@ public class ScoreMaker {
         } return null;
     }
 
-    public void setScoreParts(NodeList scorePartNodes) {
-        for (int i = 0; i < scorePartNodes.getLength(); i++) {
-            Node scorePartNode = scorePartNodes.item(i);
-            Element scorePartElement = (Element) scorePartNode;
-            int scorePartId = getScorePartId(scorePartElement);
-            int midiProgram = getScoreMidiProgram(scorePartElement);
-            Part scorePart = createPart(scorePartId, midiProgram);
-            score.addPart(scorePart);
+    public NodeList getNodesWithExpr(Document doc, XPathExpression expr) {
+        try {
+            Object result = expr.evaluate(doc, XPathConstants.NODESET);
+            return (NodeList) result;
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public void setScore(Document doc) throws XPathExpressionException {
+
+        XPathFactory xPathFactory = XPathFactory.newInstance();
+        XPath xPath = xPathFactory.newXPath();
+
+        setScoreParts(doc, xPath);
+        setAllParts(doc, xPath);
+
+    }
+
+    public void setScoreParts(Document doc, XPath xPath) throws XPathExpressionException {
+
+        NodeList scorePartIdNodes = getNodesWithExpr(doc,
+                xPath.compile("//part-list/score-part/@id"));
+
+        NodeList midiProgramNodes = getNodesWithExpr(doc,
+                xPath.compile("//part-list/score-part/midi-instrument/midi-program/text()"));
+
+        for (int i = 0; i < scorePartIdNodes.getLength(); i++) {
+            int scorePartId = getScorePartId(scorePartIdNodes, i);
+            int midiProgram = getMidiProgram(midiProgramNodes, i);
+            Part part = createPart(scorePartId, midiProgram);
+            score.addPart(part);
+        }
+    }
+    public int getScorePartId(NodeList scorePartIdNodes, int index) {
+        String scorePartIdString = scorePartIdNodes.item(index).getNodeValue();
+        return Integer.parseInt(scorePartIdString.split("P")[1]);
+    }
+
+    public int getMidiProgram(NodeList midiProgramNodes, int index) {
+        String midiProgramString = midiProgramNodes.item(index).getNodeValue();
+        return Integer.parseInt(midiProgramString);
     }
 
     private Part createPart(int scorePartId, int midiProgram) {
@@ -108,16 +139,41 @@ public class ScoreMaker {
         };
     }
 
-    public int getScorePartId(Element scorePartElement) {
-        String scorePartIdString = scorePartElement.getAttribute("id");
-        String scorePartIdStringWithoutP = scorePartIdString.split("P")[1];
-        return Integer.parseInt(scorePartIdStringWithoutP);
+    public void setAllParts(Document doc, XPath xPath) throws XPathExpressionException {
+        NodeList partNodes = getNodesWithExpr(doc,
+                xPath.compile("//part"));
+
+        for (int i = 1; i <= partNodes.getLength(); i++) { //starts on 1 because it's equal to the score part ID, which starts on 1
+            setPartStaves(doc, xPath, i); //staves
+
+
+        }
+
     }
 
-    public int getScoreMidiProgram(Element scorePartElement) {
-        String midiProgramString = scorePartElement.getElementsByTagName("midi-program").item(0).getTextContent();
-        return Integer.parseInt(midiProgramString);
+    public void setPartStaves(Document doc, XPath xPath, int index) throws XPathExpressionException {
+
+        Part part = score.getPart(index);
+        int partStavesAmount = 1; //default amount of staves
+
+        String partMeasureStavesNodesExpr = "//part[@id='P" + index + "'" + "]/measure/attributes/staves/text()";
+        NodeList partMeasureStavesNodes = getNodesWithExpr(doc,
+                xPath.compile(partMeasureStavesNodesExpr));
+
+        if (partMeasureStavesNodes.item(0) != null) {
+            partStavesAmount = Integer.parseInt(partMeasureStavesNodes.item(0).getNodeValue());
+        }
+
+        addStavesToPart(part, partStavesAmount);
+
     }
+
+    public void addStavesToPart(Part part, int partStavesAmount) {
+        for (int i = 1; i <= partStavesAmount; i++) { //staff numbers start on 1
+            part.addStaff(new Staff(i, part));
+        }
+    }
+
 
     public Score getScore() {
         return score;
