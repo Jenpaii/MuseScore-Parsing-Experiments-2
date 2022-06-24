@@ -143,9 +143,9 @@ public class ScoreMaker2 {
         NodeList partNodes = getNodesWithExpr(doc,
                 xPath.compile("//part"));
 
-        for (int i = 1; i <= partNodes.getLength(); i++) { //starts on 1 because it's equal to the score part ID, which starts on 1
-            setPartStaves(doc, xPath, i); //staves
-
+        for (int i = 1; i <= partNodes.getLength(); i++) { //starts on 1 because it's equal to the score part ID, which starts on 1. For each part...
+            setPartStaves(doc, xPath, i); //set parts' staves. (and voices).
+            setPartMeasures(doc, xPath, i); //set the parts' measures.
 
         }
 
@@ -170,7 +170,58 @@ public class ScoreMaker2 {
 
     public void addStavesToPart(Part part, int partStavesAmount) {
         for (int i = 1; i <= partStavesAmount; i++) { //staff numbers start on 1
-            part.addStaff(new Staff(i, part));
+            part.addStaff(i, new Staff(i, part));
+        }
+    }
+
+    public void setPartMeasures(Document doc, XPath xPath, int index) throws XPathExpressionException {
+
+        Part part = score.getPart(index); //parentPart
+        //int staffNumber = 1; // measures don't have a staff number, the chords/notes do.
+        //int voiceNumber; // measures don't have a voice number, the chords/notes do.
+
+        //Measures
+        String partMeasureNodesExpr = "//part[@id='P" + index + "'" + "]/measure";
+        NodeList partMeasureNodes = getNodesWithExpr(doc,
+                xPath.compile(partMeasureNodesExpr));
+        int partMeasureNodesAmount = partMeasureNodes.getLength();
+
+        for (int i = 1; i <= partMeasureNodesAmount; i++) { //measure numbers start on 1, and no need to get the measure number, just loop and count {
+            part.addMeasure(i, new Measure(part, i));
+        }
+
+        setPartMeasureDetails(doc, xPath, index); //gotta set stuff like the beat amount and the beat-type
+
+
+
+
+
+    }
+
+    public void setPartMeasureDetails(Document doc, XPath xPath, int index) throws XPathExpressionException {
+
+        Part part = score.getPart(index);
+
+        //Measure beats
+        String partMeasureBeatsNodesExpr = "//part[@id='P" + index + "'" + "]/measure/attributes/time/beats/text()";
+        NodeList partMeasureBeatsNodes = getNodesWithExpr(doc,
+                xPath.compile(partMeasureBeatsNodesExpr));
+
+        //Measure beat type
+        String partMeasureBeatTypeNodesExpr = "//part[@id='P" + index + "'" + "]/measure/attributes/time/beat-type/text()";
+        NodeList partMeasureBeatTypeNodes = getNodesWithExpr(doc,
+                xPath.compile(partMeasureBeatTypeNodesExpr));
+
+        setMeasureBeatDetails(part, partMeasureBeatsNodes, partMeasureBeatTypeNodes);
+
+    }
+
+    public void setMeasureBeatDetails(Part part, NodeList partMeasureBeatsNodes, NodeList partMeasureBeatTypeNodes) {
+        for (int i = 1; i <= part.getMeasuresAmount(); i++) { //measures start on 1
+            Measure measure = part.getMeasure(i);
+            int partMeasureBeatsAmount = Integer.parseInt(partMeasureBeatsNodes.item(0).getNodeValue());
+            int partMeasureBeatType = Integer.parseInt(partMeasureBeatTypeNodes.item(0).getNodeValue());
+            measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
         }
     }
 

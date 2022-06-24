@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Voice {
 
     private Part parentPart;
@@ -8,6 +12,11 @@ public class Voice {
         this.parentPart = parentPart;
         this.parentStaff = parentStaff;
         this.voiceNumber = voiceNumber;
+        //measures = new HashMap<>(); //reminder that voices don't have measures.
+    }
+
+    public int getVoiceNumber() {
+        return voiceNumber;
     }
 
     @Override

@@ -5,4 +5,10 @@ public class Beat {
     private Voice parentVoice;
     private Measure parentMeasure;
 
+    private int beatType;
+
+    public Beat(int beatType) {
+
+    }
+
 }

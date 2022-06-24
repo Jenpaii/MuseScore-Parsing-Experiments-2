@@ -15,10 +15,19 @@ public class Score {
         return parts.get(scorePartId);
     }
 
+    public String partsToString() {
+        StringBuilder pb = new StringBuilder();
+        pb.append("{");
+        for (Part part : parts.values()) {
+            pb.append("\n\n").append(part.getScorePartId()).append("=").append(part);
+        } pb.append("}");
+        return pb.toString();
+    }
+
     @Override
     public String toString() {
         return "Score{" +
-                "parts=" + parts +
+                "parts=" + partsToString() +
                 '}';
     }
 }
