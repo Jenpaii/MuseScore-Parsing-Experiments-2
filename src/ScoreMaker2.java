@@ -202,28 +202,48 @@ public class ScoreMaker2 {
 
         Part part = score.getPart(index);
 
-        //Measure beats
-        String partMeasureBeatsNodesExpr = "//part[@id='P" + index + "'" + "]/measure/attributes/time/beats/text()";
-        NodeList partMeasureBeatsNodes = getNodesWithExpr(doc,
-                xPath.compile(partMeasureBeatsNodesExpr));
+        for (int i = 1; i <= part.getMeasuresAmount(); i++) { //i is the measureNumber
+            //Measure beats
+            String partMeasureBeatsNodesExpr = "//part[@id='P" + index + "'" + "]/" +
+                    "measure[@number='" + i + "'" + "]/" +
+                    "attributes/time/beats/text()";
+            NodeList partMeasureBeatsNodes = getNodesWithExpr(doc,
+                    xPath.compile(partMeasureBeatsNodesExpr));
 
-        //Measure beat type
-        String partMeasureBeatTypeNodesExpr = "//part[@id='P" + index + "'" + "]/measure/attributes/time/beat-type/text()";
-        NodeList partMeasureBeatTypeNodes = getNodesWithExpr(doc,
-                xPath.compile(partMeasureBeatTypeNodesExpr));
+            //Measure beat type
+            String partMeasureBeatTypeNodesExpr = "//part[@id='P" + index + "'" + "]/" +
+                    "measure[@number='" + i + "'" + "]/" +
+                    "attributes/time/beat-type/text()";
+            NodeList partMeasureBeatTypeNodes = getNodesWithExpr(doc,
+                    xPath.compile(partMeasureBeatTypeNodesExpr));
 
-        setMeasureBeatDetails(part, partMeasureBeatsNodes, partMeasureBeatTypeNodes);
-
-    }
-
-    public void setMeasureBeatDetails(Part part, NodeList partMeasureBeatsNodes, NodeList partMeasureBeatTypeNodes) {
-        for (int i = 1; i <= part.getMeasuresAmount(); i++) { //measures start on 1
-            Measure measure = part.getMeasure(i);
-            int partMeasureBeatsAmount = Integer.parseInt(partMeasureBeatsNodes.item(0).getNodeValue());
-            int partMeasureBeatType = Integer.parseInt(partMeasureBeatTypeNodes.item(0).getNodeValue());
-            measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
+            setMeasureBeatDetails(part, partMeasureBeatsNodes, partMeasureBeatTypeNodes, i);
         }
+
+
+
+
+
+
+
     }
+
+    public void setMeasureBeatDetails(Part part, NodeList partMeasureBeatsNodes, NodeList partMeasureBeatTypeNodes, int measureNumber) {
+        Measure measure = part.getMeasure(measureNumber);
+        int partMeasureBeatsAmount;
+        int partMeasureBeatType;
+
+        if (partMeasureBeatsNodes.item(0) != null) { //new beat details spotted
+            partMeasureBeatsAmount = Integer.parseInt(partMeasureBeatsNodes.item(0).getNodeValue());
+            partMeasureBeatType = Integer.parseInt(partMeasureBeatTypeNodes.item(0).getNodeValue());
+        } else { //beat details need to be the same as previous measure
+            Measure previousMeasure = part.getPreviousMeasure(measure);
+            partMeasureBeatsAmount = previousMeasure.getBeatsAmount();
+            partMeasureBeatType = previousMeasure.getBeatType();
+        }
+        measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
+    }
+
 
 
     public Score getScore() {

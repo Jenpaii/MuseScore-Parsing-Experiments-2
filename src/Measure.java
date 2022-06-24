@@ -30,6 +30,14 @@ public class Measure {
         return measureNumber;
     }
 
+    public int getBeatsAmount() {
+        return beatsAmount;
+    }
+
+    public int getBeatType() {
+        return beatType;
+    }
+
     @Override
     public String toString() {
         return "Measure{parentPart="+parentPart.getScorePartId() +

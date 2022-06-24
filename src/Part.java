@@ -43,6 +43,12 @@ public class Part {
         return measures.get(measureNumber);
     }
 
+    public Measure getPreviousMeasure(Measure measure) {
+        int measureNumber = measure.getMeasureNumber();
+        int previousMeasureNumber = measure.getMeasureNumber()-1;
+        return measures.get(previousMeasureNumber);
+    }
+
     public void addMeasure(int measureNumber, Measure measure) {
         measures.put(measureNumber, measure);
     }
