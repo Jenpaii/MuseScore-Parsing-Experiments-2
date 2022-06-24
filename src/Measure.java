@@ -12,7 +12,7 @@ public class Measure {
     private int beatType; //don't know if I need, but might as well save.
     private Map<Integer, Beat> beats;
 
-    public Measure(Part parentPart, int measureNumber) { //if this constructor is used, it means setBeatDetails will be called later.
+    public Measure(Part parentPart, int measureNumber) { //setBeatDetails is important and will be called after a Measure is made.
         this.parentPart = parentPart;
         this.measureNumber = measureNumber;
     }
@@ -22,7 +22,7 @@ public class Measure {
         this.beatType = beatType;
         beats = new HashMap<>();
         for (int i = 1; i <= beatsAmount; i++) { //between 1 and (beatsAmount) amount of beats
-            beats.put(i, new Beat(beatType)); //beats don't really have anything but a beat type right now, this will change soon.
+            beats.put(i, new Beat(beatType)); //beats don't really have anything but a beat number and type right now, this will change soon.
         }
     }
 

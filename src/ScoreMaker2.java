@@ -199,11 +199,9 @@ public class ScoreMaker2 {
     }
 
     public void setPartMeasureDetails(Document doc, XPath xPath, int index) throws XPathExpressionException {
-
         Part part = score.getPart(index);
-
         for (int i = 1; i <= part.getMeasuresAmount(); i++) { //i is the measureNumber
-            //Measure beats
+            //Measure amount of beats
             String partMeasureBeatsNodesExpr = "//part[@id='P" + index + "'" + "]/" +
                     "measure[@number='" + i + "'" + "]/" +
                     "attributes/time/beats/text()";
@@ -217,19 +215,12 @@ public class ScoreMaker2 {
             NodeList partMeasureBeatTypeNodes = getNodesWithExpr(doc,
                     xPath.compile(partMeasureBeatTypeNodesExpr));
 
-            setMeasureBeatDetails(part, partMeasureBeatsNodes, partMeasureBeatTypeNodes, i);
+            Measure measure = part.getMeasure(i);
+            setMeasureBeatDetails(part, partMeasureBeatsNodes, partMeasureBeatTypeNodes, measure);
         }
-
-
-
-
-
-
-
     }
 
-    public void setMeasureBeatDetails(Part part, NodeList partMeasureBeatsNodes, NodeList partMeasureBeatTypeNodes, int measureNumber) {
-        Measure measure = part.getMeasure(measureNumber);
+    public void setMeasureBeatDetails(Part part, NodeList partMeasureBeatsNodes, NodeList partMeasureBeatTypeNodes, Measure measure) {
         int partMeasureBeatsAmount;
         int partMeasureBeatType;
 
@@ -243,7 +234,6 @@ public class ScoreMaker2 {
         }
         measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
     }
-
 
 
     public Score getScore() {
