@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -118,7 +119,12 @@ public class ScoreMaker2 {
     }
 
     public int getMidiProgram(NodeList midiProgramNodes, int index) {
-        String midiProgramString = midiProgramNodes.item(index).getNodeValue();
+        String midiProgramString;
+        if (midiProgramNodes.item(index) != null) {
+            midiProgramString = midiProgramNodes.item(index).getNodeValue();
+        } else { //will be null if it's a Drum, sadly. But there might also be other non-GW2 instruments that return null.
+            midiProgramString = "115"; //setting it to Drum manually. Not the best solution but yeah... works for now...
+        }
         return Integer.parseInt(midiProgramString);
     }
 
@@ -144,14 +150,15 @@ public class ScoreMaker2 {
                 xPath.compile("//part"));
 
         for (int i = 1; i <= partNodes.getLength(); i++) { //starts on 1 because it's equal to the score part ID, which starts on 1. For each part...
-            setPartStaves(doc, xPath, i); //set parts' staves. (and voices).
+            //setPartStaves(doc, xPath, i); //removing staves for now and adding it as a variable for each chord
             setPartMeasures(doc, xPath, i); //set the parts' measures.
+            setAllMeasuresChords(doc, xPath, i);
 
         }
 
     }
 
-    public void setPartStaves(Document doc, XPath xPath, int index) throws XPathExpressionException {
+/*    public void setPartStaves(Document doc, XPath xPath, int index) throws XPathExpressionException { //removing staves for now and adding it as a variable for each chord
 
         Part part = score.getPart(index);
         int partStavesAmount = 1; //default amount of staves
@@ -166,19 +173,17 @@ public class ScoreMaker2 {
 
         addStavesToPart(part, partStavesAmount);
 
-    }
+    }*/
 
-    public void addStavesToPart(Part part, int partStavesAmount) {
+/*    public void addStavesToPart(Part part, int partStavesAmount) { //removing staves for now and adding it as a variable for each chord
         for (int i = 1; i <= partStavesAmount; i++) { //staff numbers start on 1
             part.addStaff(i, new Staff(i, part));
         }
-    }
+    }*/
 
     public void setPartMeasures(Document doc, XPath xPath, int index) throws XPathExpressionException {
 
         Part part = score.getPart(index); //parentPart
-        //int staffNumber = 1; // measures don't have a staff number, the chords/notes do.
-        //int voiceNumber; // measures don't have a voice number, the chords/notes do.
 
         //Measures
         String partMeasureNodesExpr = "//part[@id='P" + index + "'" + "]/measure";
@@ -191,10 +196,6 @@ public class ScoreMaker2 {
         }
 
         setPartMeasureDetails(doc, xPath, index); //gotta set stuff like the beat amount and the beat-type
-
-
-
-
 
     }
 
@@ -235,6 +236,101 @@ public class ScoreMaker2 {
         measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
     }
 
+    public void setAllMeasuresChords(Document doc, XPath xPath, int index) throws XPathExpressionException {
+        Part part = score.getPart(index);
+        Map<Integer, Measure> measures = part.getMeasures();
+
+        for (int i = 1; i <= measures.size(); i++) {
+            setMeasureChordDetails(index, i, doc, xPath);
+        }
+    }
+
+    public void setMeasureChordDetails(int index, int i, Document doc, XPath xPath) throws XPathExpressionException {
+
+        Measure measure = score.getPart(index).getMeasure(i);
+
+        String measureNoteExpr = "//part[@id='P" + index + "'" + "]/" +
+                "measure[@number='" + i + "'" + "]/note";
+        NodeList measureNoteNodes = getNodesWithExpr(doc, xPath.compile(measureNoteExpr));
+
+        setEachMeasureChordDetail(measure, measureNoteNodes);
+
+    }
+    public void setEachMeasureChordDetail(Measure measure, NodeList measureNoteNodes) {
+
+        for (int i = 0; i < measureNoteNodes.getLength(); i++) {
+            Node node = measureNoteNodes.item(i);
+            Element note = (Element) node;
+
+            handleNoteVoice(note);
+            handleNoteStaff(note);
+            handleNoteDuration(note);
+            if (!handleNoteStep(note)) { //if this returns false, it means it was a rest. so just continue to the next loop.
+                continue; } //the stuff under this only applies to non-rests.
+            handleNoteAlter(note);
+            handleNoteOctave(note);
+            handleNoteGrace(note);
+            handleNoteChord(note);
+            System.out.println("-------------");
+        }
+        measure.addChord(new Chord()); //just adds an empty chord atm.
+    }
+
+    public void handleNoteVoice(Element note) {
+        System.out.println("Voice: " + note.getElementsByTagName("voice").item(0).getTextContent());
+    }
+
+    public void handleNoteStaff(Element note) {
+        if (note.getElementsByTagName("staff").item(0) != null) {
+            System.out.println("Staff: " + note.getElementsByTagName("staff").item(0).getTextContent());
+        } else { System.out.println("Staff: N/A"); }
+    }
+
+    public void handleNoteDuration(Element note) {
+        if (note.getElementsByTagName("duration").item(0) != null) {
+            System.out.println("Duration: " + note.getElementsByTagName("duration").item(0).getTextContent());
+        } else { System.out.println("Duration: N/A"); }
+    }
+
+    public boolean handleNoteStep(Element note) {
+        if (note.getElementsByTagName("step").item(0) != null) {
+            System.out.println("Pitch Step: " + note.getElementsByTagName("step").item(0).getTextContent());
+            return true;
+        } else { System.out.println("Pitch Step: N/A");
+            System.out.println("Pitch Alter: N/A");
+            System.out.println("Pitch Octave: N/A");
+            System.out.println("Grace: N/A");
+            System.out.println("Chord: N/A");
+            System.out.println("-------------");
+            return false; }
+    }
+
+    public void handleNoteAlter(Element note) {
+        if (note.getElementsByTagName("alter").item(0) != null) {
+            System.out.println("Pitch Alter: " + note.getElementsByTagName("alter").item(0).getTextContent());
+        } else { System.out.println("Pitch Alter: N/A"); }
+    }
+
+    public void handleNoteOctave(Element note) {
+        if (note.getElementsByTagName("octave").item(0) != null) {
+            System.out.println("Pitch Octave: " + note.getElementsByTagName("octave").item(0).getTextContent()); }
+    }
+
+    public boolean handleNoteGrace(Element note) {
+        if (note.getElementsByTagName("grace").item(0) != null) {
+            System.out.println("Grace: yes");
+            return true;
+        } else { System.out.println("Grace: N/A");
+            return false; }
+    }
+
+    public boolean handleNoteChord(Element note) {
+        if (note.getElementsByTagName("chord").item(0) != null) {
+            System.out.println("Chord: yes");
+            return true;
+        } else { System.out.println("Chord: N/A");
+            return false; }
+    }
 
     public Score getScore() {
         return score;

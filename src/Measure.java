@@ -1,20 +1,20 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Measure {
 
     private Part parentPart;
-    //private Staff parentStaff; //why did I even add this? A measure is part of both staves.
-    //private Voice parentVoice; //similarly, why did I add this? a measure doesn't have voices... the notes inside do.
-
     private int measureNumber;
     private int beatsAmount;
     private int beatType; //don't know if I need, but might as well save.
     private Map<Integer, Beat> beats;
+    private ArrayList<Chord> chords;
 
     public Measure(Part parentPart, int measureNumber) { //setBeatDetails is important and will be called after a Measure is made.
         this.parentPart = parentPart;
         this.measureNumber = measureNumber;
+        chords = new ArrayList<>();
     }
 
     public void setBeatDetails(int beatsAmount, int beatType) {
@@ -38,6 +38,17 @@ public class Measure {
         return beatType;
     }
 
+    public Chord getPreviousChord(Chord chord) {
+        int chordIndex = chords.indexOf(chord);
+        if (chordIndex > 0) {
+            return chords.get(chordIndex-1);
+        }
+        return null; //there is no previous chord!
+    }
+
+    public void addChord(Chord chord) {
+        chords.add(chord);
+    }
     @Override
     public String toString() {
         return "Measure{parentPart="+parentPart.getScorePartId() +

@@ -1,8 +1,9 @@
+/*
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Staff {
+public class Staff { //currently unused
 
     private Part parentPart;
     private int staffNumber;
@@ -48,4 +49,4 @@ public class Staff {
                 ", voices=" + voicesToString() +
                 '}';
     }
-}
+}*/

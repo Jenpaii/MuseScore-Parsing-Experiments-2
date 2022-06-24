@@ -1,8 +1,8 @@
 public class Note {
 
     private Part parentPart;
-    private Staff parentStaff;
-    private Voice parentVoice;
+    private int staffNumber; //private Staff parentStaff;
+    private int voiceNumber; //private Voice parentVoice;
     private Measure parentMeasure;
     private Beat parentBeat;
     private Chord parentChord;

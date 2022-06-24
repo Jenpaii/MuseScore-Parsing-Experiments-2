@@ -1,6 +1,3 @@
-import org.w3c.dom.NodeList;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,31 +6,31 @@ public class Part {
     int scorePartId;
     int midiProgram;
     String instrumentName;
-    private Map<Integer, Staff> staves; //staves are numbered
+    //private Map<Integer, Staff> staves; //removing staves for now and adding it as a variable for each chord
     private Map<Integer, Measure> measures; //measures are numbered. Parts DO HAVE MEASURES.
 
     public Part(int scorePartId, int midiProgram, String instrumentName) {
         this.scorePartId = scorePartId;
         this.midiProgram = midiProgram;
         this.instrumentName = instrumentName;
-        staves = new HashMap<>();
+        //staves = new HashMap<>(); //removing staves for now and adding it as a variable for each chord
         measures = new HashMap<>();
     }
 
-    public void addStaff(int staffNumber, Staff staff) {
-        staves.put(staffNumber, staff);
-    }
+    //public void addStaff(int staffNumber, Staff staff) {
+        //staves.put(staffNumber, staff); //removing staves for now and adding it as a variable for each chord
+    //}
     public String getInstrumentName() {
         return instrumentName;
     }
 
-    public boolean hasStaff(Staff staff) {
-        return staves.containsValue(staff);
-    }
+    //public boolean hasStaff(Staff staff) {
+        //return staves.containsValue(staff); //removing staves for now and adding it as a variable for each chord
+    //}
 
-    public int getStavesAmount() {
-        return staves.size();
-    }
+    //public int getStavesAmount() { //removing staves for now and adding it as a variable for each chord
+        //return staves.size();
+    //}
 
     public int getMeasuresAmount() {
         return measures.size();
@@ -52,25 +49,30 @@ public class Part {
     public void addMeasure(int measureNumber, Measure measure) {
         measures.put(measureNumber, measure);
     }
-    public Staff getStaff(int staffNumber) {
-        return staves.get(staffNumber);
-    }
 
-    public Voice getVoice(Staff staff, int voiceNumber) {
-        return staff.getVoices().get(voiceNumber);
-    }
+    //public Staff getStaff(int staffNumber) { //removing staves for now and adding it as a variable for each chord
+        //return staves.get(staffNumber);
+    //}
+
+    //public Voice getVoice(Staff staff, int voiceNumber) { //removing staves for now and adding it as a variable for each chord
+    //    return staff.getVoices().get(voiceNumber);
+    //}
 
     public int getScorePartId() {
         return scorePartId;
     }
 
-    public String stavesToString() {
+/*    public String stavesToString() { //removing staves for now and adding it as a variable for each chord
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         for (Staff staff : staves.values()) {
             sb.append("\n\t").append(staff.getStaffNumber()).append("=").append(staff);
         } sb.append("}");
         return sb.toString();
+    }*/
+
+    public Map<Integer, Measure> getMeasures() {
+        return measures;
     }
 
     public String measuresToString() {
@@ -87,7 +89,7 @@ public class Part {
                 "scorePartId=" + scorePartId +
                 ", midiProgram=" + midiProgram +
                 ", instrumentName='" + instrumentName + '\'' +
-                ", \n\tstaves=" + stavesToString() +
+                //", \n\tstaves=" + stavesToString() + //removing staves for now and adding it as a variable for each chord
                 ", \n\tmeasures=" + measuresToString() +
                 '}';
     }

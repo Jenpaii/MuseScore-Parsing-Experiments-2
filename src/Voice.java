@@ -1,12 +1,11 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+/*
 
-public class Voice {
 
-    private Part parentPart;
-    private Staff parentStaff;
-    private int voiceNumber;
+public class Voice { //currently unused
+
+    private final Part parentPart;
+    private final Staff parentStaff;
+    private final int voiceNumber;
 
     public Voice (Part parentPart, Staff parentStaff, int voiceNumber) {
         this.parentPart = parentPart;
@@ -27,4 +26,4 @@ public class Voice {
                 ", voiceNumber=" + voiceNumber +
                 '}';
     }
-}
+}*/
