@@ -1,15 +1,32 @@
 public class Note {
 
-    private Part parentPart;
-    private int staffNumber; //private Staff parentStaff;
-    private int voiceNumber; //private Voice parentVoice;
-    private Measure parentMeasure;
+    protected Part parentPart;
+    protected Measure parentMeasure;
+    protected int voiceNumber;
+    protected int staffNumber;
     private Beat parentBeat;
     private Chord parentChord;
 
-    private char step;
-    private int octave;
-    private String stepAlterSuffix = "";
+    protected double duration;
 
+    public Note(Part parentPart, Measure parentMeasure, int voiceNumber, int staffNumber, Chord parentChord, double duration) {
+        this.parentPart = parentPart;
+        this.parentMeasure = parentMeasure;
+        this.voiceNumber = voiceNumber;
+        this.staffNumber = staffNumber;
+        this.parentChord = parentChord;
+        this.duration = duration;
+    }
 
+    @Override
+    public String toString() {
+        return "Note{" +
+                "parentPart=" + parentPart.getScorePartId() +
+                ", parentMeasure=" + parentMeasure.getMeasureNumber() +
+                ", voiceNumber=" + voiceNumber +
+                ", staffNumber=" + staffNumber +
+                //", parentBeat=" + parentBeat +
+                ", duration=" + duration +
+                '}';
+    }
 }

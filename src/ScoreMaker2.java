@@ -262,34 +262,65 @@ public class ScoreMaker2 {
             Node node = measureNoteNodes.item(i);
             Element note = (Element) node;
 
-            handleNoteVoice(note);
-            handleNoteStaff(note);
-            handleNoteDuration(note);
-            if (!handleNoteStep(note)) { //if this returns false, it means it was a rest. so just continue to the next loop.
-                continue; } //the stuff under this only applies to non-rests.
+            addChordToMeasure(note, measure);
+
+        }
+    }
+
+    public void addChordToMeasure(Element note, Measure measure) {
+
+        Part parentPart = measure.getParentPart();
+
+        int noteVoice = handleNoteVoice(note);
+        int noteStaff = handleNoteStaff(note);
+        double noteDuration = handleNoteDuration(note);
+        if (!handleNoteStep(note)) { //if this returns false, it means it was a rest. so just continue to the next loop.
+            addRestChordToMeasure(parentPart, measure, noteVoice, noteStaff, noteDuration); }
+        else {
             handleNoteAlter(note);
             handleNoteOctave(note);
             handleNoteGrace(note);
             handleNoteChord(note);
-            System.out.println("-------------");
         }
-        measure.addChord(new Chord()); //just adds an empty chord atm.
+
+        System.out.println("-------------");
+
+        measure.addChord(new Chord(parentPart, measure, noteVoice, noteStaff));
     }
 
-    public void handleNoteVoice(Element note) {
+    public void addRestChordToMeasure(Part parentPart, Measure measure, int noteVoice, int noteStaff, double noteDuration) {
+        Chord restChord = new RestChord(parentPart, measure, noteVoice, noteStaff);
+        restChord.addNote(new RestNote(parentPart, measure, noteVoice, noteStaff, restChord, noteDuration));
+        measure.addChord(restChord);
+    }
+
+    public int handleNoteVoice(Element note) {
         System.out.println("Voice: " + note.getElementsByTagName("voice").item(0).getTextContent());
+        String voiceNumberString = note.getElementsByTagName("voice").item(0).getTextContent();
+        int voiceNumber = Integer.parseInt(voiceNumberString);
+        return (voiceNumber % 4) == 0 ?  1 : (voiceNumber % 4); // staves higher than staff 1 have voice numbers that are higher than 4
     }
 
-    public void handleNoteStaff(Element note) {
+    public int handleNoteStaff(Element note) {
         if (note.getElementsByTagName("staff").item(0) != null) {
             System.out.println("Staff: " + note.getElementsByTagName("staff").item(0).getTextContent());
-        } else { System.out.println("Staff: N/A"); }
+            String staffNumberString = note.getElementsByTagName("staff").item(0).getTextContent();
+            return Integer.parseInt(staffNumberString);
+        } else {
+            System.out.println("Staff: N/A");
+            return 1; //default staff number
+        }
     }
 
-    public void handleNoteDuration(Element note) {
+    public double handleNoteDuration(Element note) {
         if (note.getElementsByTagName("duration").item(0) != null) {
             System.out.println("Duration: " + note.getElementsByTagName("duration").item(0).getTextContent());
-        } else { System.out.println("Duration: N/A"); }
+            String noteDurationString = note.getElementsByTagName("duration").item(0).getTextContent();
+            return Double.parseDouble(noteDurationString);
+        } else {
+            System.out.println("Duration: N/A");
+            return 0.0; //only grace notes have this duration
+        }
     }
 
     public boolean handleNoteStep(Element note) {
@@ -301,7 +332,6 @@ public class ScoreMaker2 {
             System.out.println("Pitch Octave: N/A");
             System.out.println("Grace: N/A");
             System.out.println("Chord: N/A");
-            System.out.println("-------------");
             return false; }
     }
 

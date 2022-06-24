@@ -49,13 +49,29 @@ public class Measure {
     public void addChord(Chord chord) {
         chords.add(chord);
     }
+
+    public Part getParentPart() {
+        return parentPart;
+    }
+
+    public String chordsToString() {
+        StringBuilder cb = new StringBuilder();
+        cb.append("{");
+        for (Chord chord : chords) {
+            cb.append("\n\t\t\t").append(chord);
+        } cb.append("}");
+        return cb.toString();
+    }
+
     @Override
     public String toString() {
-        return "Measure{parentPart="+parentPart.getScorePartId() +
+        return "Measure{" +
+                "parentPart=" + parentPart.getScorePartId() +
                 ", measureNumber=" + measureNumber +
                 ", beatsAmount=" + beatsAmount +
                 ", beatType=" + beatType +
-                ", beats=" + beats +
+                //", beats=" + beats +
+                ", chords=" + chordsToString() +
                 '}';
     }
 }
