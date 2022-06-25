@@ -1,8 +1,9 @@
 package com.herokuapp.mstogw2.main;
 
+import com.herokuapp.mstogw2.part.Part;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.herokuapp.mstogw2.part.*;
 public class Score {
     private Map<Integer, Part> parts;
 
@@ -15,6 +16,10 @@ public class Score {
     }
     public Part getPart(int scorePartId) {
         return parts.get(scorePartId);
+    }
+
+    public int getPartsAmount() {
+        return parts.size();
     }
 
     public String partsToString() {

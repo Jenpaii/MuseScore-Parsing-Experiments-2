@@ -2,7 +2,7 @@ package com.herokuapp.mstogw2.chord;
 
 import com.herokuapp.mstogw2.main.Beat;
 import com.herokuapp.mstogw2.main.Measure;
-import com.herokuapp.mstogw2.part.*;
+import com.herokuapp.mstogw2.part.Part;
 
 public abstract class Note { //Abstract, cannot be instantiated
 

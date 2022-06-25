@@ -6,7 +6,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,9 +35,13 @@ public class FileParser {
     public Document getDocument(String fileType, InputStream fileContent) {
         try {
             InputStream inputStream = getFilesInputStream(fileType, fileContent);
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            dbFactory.setNamespaceAware(true);
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false); //go faster!!!!!!!!
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); //go faster!!!!!!!!
+
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
             if (inputStream == null) { return null; }
             else {
                 return dBuilder.parse(inputStream);

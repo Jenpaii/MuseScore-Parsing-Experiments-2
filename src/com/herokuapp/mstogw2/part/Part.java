@@ -1,9 +1,9 @@
 package com.herokuapp.mstogw2.part;
 
+import com.herokuapp.mstogw2.main.Measure;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.herokuapp.mstogw2.main.*;
 
 public class Part {
 

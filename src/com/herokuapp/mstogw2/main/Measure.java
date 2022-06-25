@@ -1,18 +1,18 @@
 package com.herokuapp.mstogw2.main;
 
+import com.herokuapp.mstogw2.chord.Chord;
+import com.herokuapp.mstogw2.part.Part;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.herokuapp.mstogw2.chord.Chord;
-import com.herokuapp.mstogw2.part.*;
 
 public class Measure {
 
     private Part parentPart;
     private int measureNumber;
-    private int beatsAmount;
-    private int beatType; //don't know if I need, but might as well save.
+    private int beatsAmount = -1;
+    private int beatType = -1; //don't know if I need, but might as well save.
     private Map<Integer, Beat> beats;
     private ArrayList<Chord> chords;
 

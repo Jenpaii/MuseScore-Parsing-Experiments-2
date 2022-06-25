@@ -1,6 +1,6 @@
 package com.herokuapp.mstogw2.main;
 
-import com.herokuapp.mstogw2.part.*;
+import com.herokuapp.mstogw2.part.Part;
 
 public class Beat {
 

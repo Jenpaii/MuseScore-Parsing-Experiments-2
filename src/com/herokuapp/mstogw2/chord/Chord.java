@@ -1,11 +1,11 @@
 package com.herokuapp.mstogw2.chord;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.herokuapp.mstogw2.main.Beat;
 import com.herokuapp.mstogw2.main.Measure;
-import com.herokuapp.mstogw2.part.*;
+import com.herokuapp.mstogw2.part.Part;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 public class Chord { //Chord with grace and/or standard notes
     private Part parentPart;
     private Measure parentMeasure;
