@@ -10,7 +10,7 @@ public class RestChord extends Chord {
     }
 
     @Override
-    public String toString() {
-        return "Rest" + super.toString();
+    public String getChordType() {
+        return "Rest" + super.getChordType();
     }
 }

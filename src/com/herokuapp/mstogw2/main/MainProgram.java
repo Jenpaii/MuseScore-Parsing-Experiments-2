@@ -8,14 +8,14 @@ public class MainProgram {
 
     public static void main(String[] args) throws XPathExpressionException {
 
-        FileParser fp = new FileParser();
-        ScoreMaker sm = new ScoreMaker();
+        FileParser fileParser = new FileParser();
+        ScoreMaker scoreMaker = new ScoreMaker();
 
-        Document doc = fp.parseFile("D:\\Coding Stuff\\Musescore Parsing Experiments\\Test");
+        Document doc = fileParser.parseFile("D:\\Coding Stuff\\Musescore Parsing Experiments\\Test");
 
-        sm.setScore(doc);
+        scoreMaker.setScore(doc);
 
-        System.out.println(sm.getScore());
+        System.out.println(scoreMaker.getScore());
 
     }
 

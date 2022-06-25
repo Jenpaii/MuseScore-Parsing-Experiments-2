@@ -4,7 +4,7 @@ import com.herokuapp.mstogw2.main.Beat;
 import com.herokuapp.mstogw2.main.Measure;
 import com.herokuapp.mstogw2.part.*;
 
-public class Note {
+public abstract class Note { //Abstract, cannot be instantiated
 
     protected Part parentPart;
     protected Measure parentMeasure;
@@ -24,9 +24,12 @@ public class Note {
         this.duration = duration;
     }
 
+    public String getNoteType() {
+        return "Note";
+    }
     @Override
     public String toString() {
-        return "Note{" +
+        return getNoteType() + "{" +
                 "parentPart=" + parentPart.getScorePartId() +
                 ", parentMeasure=" + parentMeasure.getMeasureNumber() +
                 ", voiceNumber=" + voiceNumber +

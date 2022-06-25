@@ -9,8 +9,8 @@ public class RestNote extends Note {
         super(parentPart, parentMeasure, voiceNumber, staffNumber, parentChord, duration);
     }
 
-    @Override
-    public String toString() {
-        return "Rest" + super.toString();
+    public String getNoteType() {
+        return "Rest" + super.getNoteType();
     }
+
 }
