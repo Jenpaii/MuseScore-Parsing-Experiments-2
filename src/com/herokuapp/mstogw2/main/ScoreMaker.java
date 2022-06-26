@@ -6,8 +6,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.Map;
-
 public class ScoreMaker {
 
     private final Score score;
@@ -26,7 +24,9 @@ public class ScoreMaker {
 
         NodeList scorePartNodes = doc.getElementsByTagName("score-part");
 
-        for (int i = 0; i < scorePartNodes.getLength(); i++) {
+        int scorePartNodesLength = scorePartNodes.getLength(); //go faster
+
+        for (int i = 0; i < scorePartNodesLength; i++) {
 
             Node node = scorePartNodes.item(i);
             Element element = (Element) node;
@@ -59,54 +59,11 @@ public class ScoreMaker {
 
         MeasureHandler measureHandler = new MeasureHandler();
         NodeList partNodes = doc.getElementsByTagName("part");
+        int partNodesLength = partNodes.getLength(); //go faster
 
-        for (int partNumber = 1; partNumber <= partNodes.getLength(); partNumber++) { //starts on 1 because it's equal to the score part ID, which starts on 1. For each part...
+        for (int partNumber = 1; partNumber <= partNodesLength; partNumber++) { //starts on 1 because it's equal to the score part ID, which starts on 1. For each part...
             measureHandler.setPartMeasures(score, doc, partNumber); //set the parts' measures.
-            setAllMeasuresChords(doc, partNumber);
-        }
-    }
-
-    public void setAllMeasuresChords(Document doc, int partNumber) {
-        Part part = score.getPart(partNumber);
-        Map<Integer, Measure> measures = part.getMeasures();
-
-        for (int measureNumber = 1; measureNumber <= measures.size(); measureNumber++) {
-            setMeasureChordDetails(partNumber, measureNumber, doc);
-        }
-    }
-
-    public void setMeasureChordDetails(int partNumber, int measureNumber, Document doc) {
-
-        Measure measure = score.getPart(partNumber).getMeasure(measureNumber);
-
-        NodeList partNodes = doc.getElementsByTagName("part");
-
-        int partIndex = partNumber-1;
-        //finds the measureNodes of partNumber. This used to be a loop. Why?
-        NodeList partMeasureNodes = ((Element) partNodes.item(partIndex)).getElementsByTagName("measure");
-
-        int measureIndex = measureNumber-1;
-        //finds the noteNodes of measureNumber. This used to be a loop. Why?
-        NodeList measureNoteNodes = ((Element) partMeasureNodes.item(measureIndex)).getElementsByTagName("note");
-
-        setEachMeasureChordDetail(measure, measureNoteNodes);
-
-    }
-
-    public void setEachMeasureChordDetail(Measure measure, NodeList measureNoteNodes) {
-
-        ChordHandler chorder = new ChordHandler();
-
-        for (int i = 0; i < measureNoteNodes.getLength(); i++) {
-
-            Node node = measureNoteNodes.item(i);
-
-            node.getParentNode().removeChild(node); //make faster? Yes a bit.
-
-            Element note = (Element) node;
-
-            chorder.addChordToMeasure(note, measure);
-
+            measureHandler.setAllMeasuresChords(score, doc, partNumber); //move this into measureHandler? measureHandler.setAllMeasuresChords(doc, partNumber);
         }
     }
 

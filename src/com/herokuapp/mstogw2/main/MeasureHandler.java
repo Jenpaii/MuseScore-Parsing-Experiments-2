@@ -5,6 +5,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.Map;
+
 public class MeasureHandler { //Completely free from xPath stuff.
 
     public void setPartMeasures(Score score, Document doc, int partNumber) {
@@ -20,18 +23,6 @@ public class MeasureHandler { //Completely free from xPath stuff.
         }
 
         setPartMeasureDetails(score, doc, partNumber); //gotta set stuff like the beat amount and the beat-type
-    }
-
-    public void setPartMeasureRepeatDetail(NodeList measureNodes, int measureIndex, Measure measure) {
-        //sets measures to repeat start and/or end
-        if (((Element) measureNodes.item(measureIndex)).getElementsByTagName("repeat").item(0) != null) {
-            String measureRepeat = ((Element) ((Element) measureNodes.item(measureIndex)).getElementsByTagName("repeat").item(0)).getAttribute("direction");
-            if (measureRepeat.equals("forward")) {
-                measure.setRepeatStart(true);
-            } else if (measureRepeat.equals("backward")) {
-                measure.setRepeatEnd(true);
-            }
-        }
     }
 
     public void setPartMeasureDetails(Score score, Document doc, int partNumber) {
@@ -65,7 +56,10 @@ public class MeasureHandler { //Completely free from xPath stuff.
     }
 
     public void setPartOneBeatDetails(NodeList beatsNodes, NodeList beatTypeNodes, Part part) {
-        for (int b = 0; b < beatsNodes.getLength(); b++) {
+
+        int beatsNodesLength = beatsNodes.getLength(); //faster
+
+        for (int b = 0; b < beatsNodesLength; b++) {
 
             Node beatNode = beatsNodes.item(b);
             String beatsString = beatNode.getTextContent();
@@ -81,9 +75,13 @@ public class MeasureHandler { //Completely free from xPath stuff.
     }
 
     public void setPartOneRepeatDetails(NodeList repeatNodes, Part part) {
-        for (int b = 0; b < repeatNodes.getLength(); b++) {
+
+        int repeatNodesLength = repeatNodes.getLength(); //faster
+
+        for (int b = 0; b < repeatNodesLength; b++) {
 
             Node repeatNode = repeatNodes.item(b);
+
             String repeatString = ((Element) repeatNode).getAttribute("direction");
 
             String measureNumberWithRepeatChange = ((Element) repeatNode.getParentNode().getParentNode()).getAttribute("number");
@@ -115,7 +113,6 @@ public class MeasureHandler { //Completely free from xPath stuff.
             } else { // other parts can just copy the details of part 1. No details in these measures are assigned yet.
                 copyPartOneDetails(score, part, measureNumber);
             }
-
         }
     }
 
@@ -132,6 +129,50 @@ public class MeasureHandler { //Completely free from xPath stuff.
         measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
         measure.setRepeatStart(repeatStart);
         measure.setRepeatEnd(repeatEnd);
+    }
+
+    public void setAllMeasuresChords(Score score, Document doc, int partNumber) {
+        Part part = score.getPart(partNumber);
+        Map<Integer, Measure> measures = part.getMeasures();
+
+        for (int measureNumber = 1; measureNumber <= measures.size(); measureNumber++) {
+            setMeasureChordDetails(score, partNumber, measureNumber, doc);
+        }
+    }
+
+    public void setMeasureChordDetails(Score score, int partNumber, int measureNumber, Document doc) {
+
+        Measure measure = score.getPart(partNumber).getMeasure(measureNumber);
+
+        NodeList partNodes = doc.getElementsByTagName("part");
+
+        int partIndex = partNumber-1;
+        //finds the measureNodes of partNumber. This used to be a loop. Why?
+        NodeList partMeasureNodes = ((Element) partNodes.item(partIndex)).getElementsByTagName("measure");
+
+        int measureIndex = measureNumber-1;
+        //finds the noteNodes of measureNumber. This used to be a loop. Why?
+        NodeList measureNoteNodes = ((Element) partMeasureNodes.item(measureIndex)).getElementsByTagName("note");
+
+        setEachMeasureChordDetail(measure, measureNoteNodes);
+
+    }
+
+    public void setEachMeasureChordDetail(Measure measure, NodeList measureNoteNodes) {
+
+        ChordHandler chorder = new ChordHandler();
+
+        for (int i = 0; i < measureNoteNodes.getLength(); i++) { //Has to stay, because removeChild changes the length.
+
+            Node node = measureNoteNodes.item(i);
+
+            node.getParentNode().removeChild(node); //make faster? Yes a bit.
+
+            Element note = (Element) node;
+
+            chorder.addChordToMeasure(note, measure);
+
+        }
     }
 
 }
