@@ -1,3 +1,4 @@
+/*
 package com.herokuapp.mstogw2.unused;
 
 import com.herokuapp.mstogw2.main.Score;
@@ -128,3 +129,4 @@ public class ScoreMakerOld {
         return score.toString();
     }
 }
+*/

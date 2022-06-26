@@ -13,6 +13,8 @@ public class Measure {
     private int measureNumber;
     private int beatsAmount = -1;
     private int beatType = -1; //don't know if I need, but might as well save.
+    private boolean repeatStart = false;
+    private boolean repeatEnd = false;
     private Map<Integer, Beat> beats;
     private ArrayList<Chord> chords;
 
@@ -31,6 +33,21 @@ public class Measure {
         }
     }
 
+    public boolean isRepeatStart() {
+        return repeatStart;
+    }
+
+    public boolean isRepeatEnd() {
+        return repeatEnd;
+    }
+
+    public void setRepeatStart(boolean repeatStart) {
+        this.repeatStart = repeatStart;
+    }
+
+    public void setRepeatEnd(boolean repeatEnd) {
+        this.repeatEnd = repeatEnd;
+    }
     public int getMeasureNumber() {
         return measureNumber;
     }
@@ -67,7 +84,6 @@ public class Measure {
         } cb.append("}");
         return cb.toString();
     }
-
     @Override
     public String toString() {
         return "Measure{" +
@@ -75,6 +91,8 @@ public class Measure {
                 ", measureNumber=" + measureNumber +
                 ", beatsAmount=" + beatsAmount +
                 ", beatType=" + beatType +
+                ", repeatStart=" + repeatStart +
+                ", repeatEnd=" + repeatEnd +
                 //", beats=" + beats +
                 ", chords=" + chordsToString() +
                 '}';

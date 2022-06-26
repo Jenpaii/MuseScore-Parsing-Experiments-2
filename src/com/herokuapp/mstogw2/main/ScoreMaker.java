@@ -80,20 +80,14 @@ public class ScoreMaker {
         Measure measure = score.getPart(partNumber).getMeasure(measureNumber);
 
         NodeList partNodes = doc.getElementsByTagName("part");
-        NodeList partMeasureNodes = null;
-        NodeList measureNoteNodes = null;
 
-        for (int a = 0; a < partNodes.getLength(); a++) { //finds the measureNodes of partNumber
-            if ( ((Element) partNodes.item(a)).getAttribute("id").equals("P" +  String.valueOf(partNumber)  )) {
-                partMeasureNodes = ((Element) partNodes.item(a)).getElementsByTagName("measure");
-            }
-        }
+        int partIndex = partNumber-1;
+        //finds the measureNodes of partNumber. This used to be a loop. Why?
+        NodeList partMeasureNodes = ((Element) partNodes.item(partIndex)).getElementsByTagName("measure");
 
-        for (int b = 0; b < partMeasureNodes.getLength(); b++) { //finds the noteNodes of measureNumber
-            if ( ((Element) partMeasureNodes.item(b)).getAttribute("number").equals( String.valueOf(measureNumber) )) {
-                measureNoteNodes = ((Element) partMeasureNodes.item(b)).getElementsByTagName("note");
-            }
-        }
+        int measureIndex = measureNumber-1;
+        //finds the noteNodes of measureNumber. This used to be a loop. Why?
+        NodeList measureNoteNodes = ((Element) partMeasureNodes.item(measureIndex)).getElementsByTagName("note");
 
         setEachMeasureChordDetail(measure, measureNoteNodes);
 
@@ -106,6 +100,9 @@ public class ScoreMaker {
         for (int i = 0; i < measureNoteNodes.getLength(); i++) {
 
             Node node = measureNoteNodes.item(i);
+
+            node.getParentNode().removeChild(node); //make faster? Yes a bit.
+
             Element note = (Element) node;
 
             chorder.addChordToMeasure(note, measure);

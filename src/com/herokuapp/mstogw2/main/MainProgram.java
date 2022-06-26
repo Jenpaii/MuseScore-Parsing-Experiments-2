@@ -11,7 +11,7 @@ public class MainProgram {
         final long startTime = System.currentTimeMillis();
 
         String file = "D:\\Coding Stuff\\MuseScore Parsing Experiments\\";
-        file += "bosun"; // change the file name here.
+        file += "Wisteria"; // change the file name here.
 
         FileParser fileParser = new FileParser();
         ScoreMaker scoreMaker = new ScoreMaker();
