@@ -24,8 +24,8 @@ public class ScoreMaker {
 
         NodeList scorePartNodes = doc.getElementsByTagName("score-part");
 
+      //For-loop
         int scorePartNodesLength = scorePartNodes.getLength(); //go faster
-
         for (int i = 0; i < scorePartNodesLength; i++) {
 
             Node node = scorePartNodes.item(i);
@@ -36,6 +36,20 @@ public class ScoreMaker {
 
             score.addPart(part);
         }
+
+
+/*        Node currentNode = scorePartNodes.item(0); //While-loop instead! But it's a bit slower for some reason?
+        while (currentNode != null) {
+            if (currentNode.getNodeName().equals("score-part")) {
+                Element element = (Element) currentNode;
+                int scorePartId = Integer.parseInt(element.getAttribute("id").split("P")[1]);
+                int midiProgram = Integer.parseInt(element.getElementsByTagName("midi-program").item(0).getTextContent());
+                Part part = createPart(scorePartId, midiProgram);
+                score.addPart(part);
+            }
+
+            currentNode = currentNode.getNextSibling();
+        }*/
     }
 
     private Part createPart(int scorePartId, int midiProgram) {
@@ -58,12 +72,15 @@ public class ScoreMaker {
     public void setPartDetails(Document doc) {
 
         MeasureHandler measureHandler = new MeasureHandler();
-        NodeList partNodes = doc.getElementsByTagName("part");
-        int partNodesLength = partNodes.getLength(); //go faster
+        int partNodesLength = score.getPartsAmount();
+
+        //Measures
+        NodeList measureNodes = doc.getElementsByTagName("measure");
+        int measuresPerPart = measureNodes.getLength() / score.getPartsAmount(); //amount of measures per part is just total amount of measures divided by amount of parts.
 
         for (int partNumber = 1; partNumber <= partNodesLength; partNumber++) { //starts on 1 because it's equal to the score part ID, which starts on 1. For each part...
-            measureHandler.setPartMeasures(score, doc, partNumber); //set the parts' measures.
-            measureHandler.setAllMeasuresChords(score, doc, partNumber); //move this into measureHandler? measureHandler.setAllMeasuresChords(doc, partNumber);
+            measureHandler.setPartMeasures(score, doc, partNumber, measuresPerPart); //set the parts' measures.
+            measureHandler.setAllMeasuresChords(score, doc, partNumber);
         }
     }
 

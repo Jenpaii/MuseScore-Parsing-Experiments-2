@@ -8,7 +8,7 @@ import com.herokuapp.mstogw2.part.Part;
 import org.w3c.dom.Element;
 
 public class ChordHandler {
-    private boolean printsEnabled = true;
+    private boolean printsEnabled = false;
     public void addChordToMeasure(Element note, Measure measure) {
 
         Part parentPart = measure.getParentPart();
