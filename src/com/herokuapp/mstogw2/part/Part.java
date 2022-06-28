@@ -10,7 +10,7 @@ public class Part {
     int scorePartId;
     int midiProgram;
     String instrumentName;
-    //private Map<Integer, Staff> staves; //removing staves for now and adding it as a variable for each chord
+    private int divisions; //helps normalise note durations. Real duration is duration divided by divisions.
     private Map<Integer, Measure> measures; //measures are numbered. Parts DO HAVE MEASURES.
 
     public Part(int scorePartId, int midiProgram, String instrumentName) {
@@ -55,6 +55,13 @@ public class Part {
         return measures;
     }
 
+    public int getDivisions() {
+        return divisions;
+    }
+    public void setDivisions(int divisions) {
+        this.divisions = divisions;
+    }
+
     public String measuresToString() {
         StringBuilder mb = new StringBuilder();
         mb.append("{");
@@ -63,14 +70,16 @@ public class Part {
         } mb.append("}");
         return mb.toString();
     }
+
     @Override
     public String toString() {
         return "Part{" +
                 "scorePartId=" + scorePartId +
                 ", midiProgram=" + midiProgram +
                 ", instrumentName='" + instrumentName + '\'' +
-                //", \n\tstaves=" + stavesToString() + //removing staves for now and adding it as a variable for each chord
+                ", divisions=" + divisions +
                 ", \n\tmeasures=" + measuresToString() +
                 '}';
     }
+
 }

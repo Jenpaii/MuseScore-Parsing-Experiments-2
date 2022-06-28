@@ -8,9 +8,22 @@ public class Beat {
     private Measure parentMeasure;
 
     private int beatType;
+    private double duration;
 
-    public Beat(int beatType) {
-
+    public Beat(Part parentPart, Measure parentMeasure, int beatType, double duration) {
+        this.parentPart = parentPart;
+        this.parentMeasure = parentMeasure;
+        this.beatType = beatType;
+        this.duration = duration;
     }
 
+    @Override
+    public String toString() {
+        return "Beat{" +
+                "parentPart=" + parentPart.getScorePartId() +
+                ", parentMeasure=" + parentMeasure.getMeasureNumber() +
+                ", beatType=" + beatType +
+                ", duration=" + duration +
+                '}';
+    }
 }

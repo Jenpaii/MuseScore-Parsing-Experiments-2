@@ -14,4 +14,18 @@ public abstract class PitchNote extends Note { //Abstract, cannot be instantiate
         this.alter = alter;
         this.octave = octave;
     }
+
+    @Override
+    public String toString() {
+        return getNoteType() + "{" +
+                "parentPart=" + parentPart.getScorePartId() +
+                ", parentMeasure=" + parentMeasure.getMeasureNumber() +
+                ", voiceNumber=" + voiceNumber +
+                ", staffNumber=" + staffNumber +
+                ", duration=" + duration +
+                ", step=" + step +
+                ", alter=" + alter +
+                ", octave=" + octave +
+                '}';
+    }
 }

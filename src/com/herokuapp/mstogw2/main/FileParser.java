@@ -6,7 +6,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,13 +20,13 @@ public class FileParser {
             File inputFile = new File(fileName + ".musicxml");
             InputStream inputFileStream = new FileInputStream(inputFile);
             return parseFile(".musicxml", inputFileStream);
-        } catch (IOException | XPathExpressionException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null; //it hit an error anyways...
         }
     }
 
-    public Document parseFile(String fileType, InputStream fileContent) throws XPathExpressionException {
+    public Document parseFile(String fileType, InputStream fileContent) {
         Document doc = getDocument(fileType, fileContent);
         return doc; //doc can be null, keep this in mind.
     }

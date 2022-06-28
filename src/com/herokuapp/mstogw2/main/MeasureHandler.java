@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MeasureHandler { //Completely free from xPath stuff.
 
-    public void setPartMeasures(Score score, Document doc, int partNumber, int measuresPerPart) {
+    public void setPartMeasures(Score score, int partNumber, int measuresPerPart) {
 
         Part part = score.getPart(partNumber); //parentPart
 
@@ -18,7 +18,6 @@ public class MeasureHandler { //Completely free from xPath stuff.
             part.addMeasure(measureNumber, new Measure(part, measureNumber));
         }
 
-        setPartMeasureDetails(score, doc, partNumber); //gotta set stuff like the beat amount and the beat-type
     }
 
     public void setPartMeasureDetails(Score score, Document doc, int partNumber) {
@@ -97,9 +96,6 @@ public class MeasureHandler { //Completely free from xPath stuff.
             }
 
         }
-
-
-
     }
 
     public void fillRemainingDetails(Score score, int partNumber) {
@@ -114,6 +110,7 @@ public class MeasureHandler { //Completely free from xPath stuff.
                     Measure previousMeasure = part.getPreviousMeasure(measure); //so we assign it the same as what the previous measure had.
                     int partMeasureBeatsAmount = previousMeasure.getBeatsAmount();
                     int partMeasureBeatType = previousMeasure.getBeatType();
+
                     measure.setBeatDetails(partMeasureBeatsAmount, partMeasureBeatType);
                 }
             } else { // other parts can just copy the details of part 1. No details in these measures are assigned yet.
@@ -145,7 +142,8 @@ public class MeasureHandler { //Completely free from xPath stuff.
 
         int partIndex = partNumber-1;
         //finds the measureNodes of partNumber. This used to be a loop. Why?
-        NodeList partMeasureNodes = ((Element) partNodes.item(partIndex)).getElementsByTagName("measure");
+        NodeList partMeasureNodes = ((Element) partNodes.item(partIndex)).getElementsByTagName("measure"); //this used to be in setMeasureChordDetails and was running
+        //hundreds of times for no reason, slowing the whole program down massively.
 
         for (int measureNumber = 1; measureNumber <= measures.size(); measureNumber++) {
             setMeasureChordDetails(score, partNumber, measureNumber, partMeasureNodes);
@@ -173,7 +171,8 @@ public class MeasureHandler { //Completely free from xPath stuff.
 
             Node node = measureNoteNodes.item(i);
 
-            node.getParentNode().removeChild(node); //make faster? Yes a bit.
+            node.getParentNode().removeChild(node); //make faster? Yes a bit. Decrement i to reflect an item being removed?
+            i--; //Yeah, this was necessary because some notes were being skipped when the indexing changed.
 
             Element note = (Element) node;
 

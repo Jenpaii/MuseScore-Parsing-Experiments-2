@@ -21,11 +21,22 @@ public abstract class Note { //Abstract, cannot be instantiated
         this.voiceNumber = voiceNumber;
         this.staffNumber = staffNumber;
         this.parentChord = parentChord;
-        this.duration = duration;
+        this.duration = duration/parentPart.getDivisions(); //normalise the duration based on the parent part's divisions value.
     }
 
     public String getNoteType() {
         return "Note";
+    }
+
+    public int getVoice() {
+        return voiceNumber;
+    }
+
+    public int getStaff() {
+        return staffNumber;
+    }
+    public double getDuration() {
+        return duration;
     }
     @Override
     public String toString() {

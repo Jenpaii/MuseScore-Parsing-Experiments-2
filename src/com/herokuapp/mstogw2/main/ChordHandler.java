@@ -1,14 +1,11 @@
 package com.herokuapp.mstogw2.main;
 
-import com.herokuapp.mstogw2.chord.Chord;
-import com.herokuapp.mstogw2.chord.Note;
-import com.herokuapp.mstogw2.chord.RestChord;
-import com.herokuapp.mstogw2.chord.RestNote;
+import com.herokuapp.mstogw2.chord.*;
 import com.herokuapp.mstogw2.part.Part;
 import org.w3c.dom.Element;
 
 public class ChordHandler {
-    private boolean printsEnabled = false;
+    private boolean printsEnabled = true;
     public void addChordToMeasure(Element note, Measure measure) {
 
         Part parentPart = measure.getParentPart();
@@ -18,18 +15,19 @@ public class ChordHandler {
         double noteDuration = getNoteDuration(note);
 
         if (isRest(note)) {
-            addRestChordToMeasure(parentPart, measure, noteVoice, noteStaff, noteDuration);
-        }
+            addRestChordToMeasure(parentPart, measure, noteVoice, noteStaff, noteDuration); }
 
         else { //standard chords
-            addChordToMeasure(note, parentPart, measure, noteVoice, noteStaff);
-        }
+            addChordToMeasure(note, parentPart, measure, noteVoice, noteStaff, noteDuration); }
+
+        measure.addVoiceNumber(noteVoice);
+        measure.addStaffNumber(noteStaff);
 
         if (printsEnabled) { System.out.println("-------------"); }
 
     }
 
-    public void addChordToMeasure(Element note, Part parentPart, Measure measure, int noteVoice, int noteStaff) {
+    public void addChordToMeasure(Element note, Part parentPart, Measure measure, int noteVoice, int noteStaff, double noteDuration) {
 
         char noteStep = getNoteStep(note); //only pitched notes have this stuff
         int noteAlter = getNoteAlter(note);
@@ -38,6 +36,11 @@ public class ChordHandler {
         boolean isChorded = getNoteIsChorded(note);
 
         Chord chord = makeChord(parentPart, measure, noteVoice, noteStaff); //just temporary. Standard chord with no notes
+
+        Note newNote = isGrace ? new GraceNote(parentPart, measure, noteVoice, noteStaff, chord, noteDuration, noteStep, noteAlter, noteOctave) :
+                new StandardNote(parentPart, measure, noteVoice, noteStaff, chord, noteDuration, noteStep, noteAlter, noteOctave);
+
+        chord.addNote(newNote);
         measure.addChord(chord);
     }
 
@@ -97,7 +100,7 @@ public class ChordHandler {
     public double getNoteDuration(Element note) {
         if (note.getElementsByTagName("duration").item(0) != null) {
             String noteDurationString = note.getElementsByTagName("duration").item(0).getTextContent();
-            if (printsEnabled) { System.out.println("Duration: " + noteDurationString); }
+            if (printsEnabled) { System.out.println("Duration: " + Double.parseDouble(noteDurationString)); }
             return Double.parseDouble(noteDurationString);
         } else {
             if (printsEnabled) { System.out.println("Duration: N/A"); }

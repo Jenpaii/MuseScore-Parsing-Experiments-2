@@ -11,13 +11,10 @@ public class Chord { //Chord with grace and/or standard notes
     private Measure parentMeasure;
     private int voiceNumber; //private Voice parentVoice;
     private int staffNumber; //private Staff parentStaff;
+    private double duration;
     private Beat parentBeat;
 
     private ArrayList<Note> notes;
-
-    public void addNote(Note note) {
-        notes.add(note);
-    }
 
     public Chord (Part parentPart, Measure parentMeasure, int voiceNumber, int staffNumber, Note... newNotes) { //Constructor needs to be updated with pitch variables
         this.parentPart = parentPart;
@@ -29,16 +26,35 @@ public class Chord { //Chord with grace and/or standard notes
         notes.addAll(Arrays.asList(newNotes));
     }
 
+    public void addNote(Note note) {
+        notes.add(note);
+        addDuration(note.getDuration());
+    }
+
+    public void addDuration(double duration) {
+        this.duration += duration;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
     public String getChordType() {
         return "Chord";
     }
+
+    public Note getFirstNote() {
+        return notes.get(0);
+    }
+
     @Override
     public String toString() {
-        return getChordType() +"{" +
+        return getChordType() + "{" +
                 "parentPart=" + parentPart.getScorePartId() +
                 ", parentMeasure=" + parentMeasure.getMeasureNumber() +
                 ", voiceNumber=" + voiceNumber +
                 ", staffNumber=" + staffNumber +
+                ", duration=" + duration +
                 //", parentBeat=" + parentBeat +
                 ", notes=" + notes +
                 '}';
