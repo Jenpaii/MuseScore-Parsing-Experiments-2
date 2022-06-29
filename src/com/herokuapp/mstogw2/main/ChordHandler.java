@@ -4,8 +4,11 @@ import com.herokuapp.mstogw2.chord.*;
 import com.herokuapp.mstogw2.part.Part;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
+
 public class ChordHandler {
     private boolean printsEnabled = true;
+    private ArrayList<Note> graceBacklog = new ArrayList<>();
     public void addChordToMeasure(Element note, Measure measure) {
 
         Part parentPart = measure.getParentPart();
@@ -41,19 +44,22 @@ public class ChordHandler {
         parentPart.addNote(newNote); //adding notes to part, as well.
         newNote.setNoteNumberInPart(parentPart.getNotesAmount()); //setting the number on the note as well. Starts on 1 for each part.
 
-        if (!isChorded) { //only do this for the first note of a chord
+        if (!isChorded && !isGrace) { //only do this for the first note of a chord, and if it's not a grace note
             addNewChordToMeasure(newNote, parentPart, measure, noteVoice, noteStaff);
-        } else { //this note is chorded, meaning it belongs to the previous note's chord
+        } else if (isChorded && !isGrace) { //this note is chorded, meaning it belongs to the previous note's chord. Still not grace though.
             addNoteToPreviousChord(newNote, parentPart);
-        }
-
+        } else if (isGrace) {graceBacklog.add(newNote);} //add it to the backlog.
     }
 
     public void addNewChordToMeasure(Note newNote, Part parentPart, Measure measure, int noteVoice, int noteStaff) {
 
         Chord chord = makeChord(parentPart, measure, noteVoice, noteStaff);
+        if(!graceBacklog.isEmpty()) { //if there's notes in the grace backlog
+            chord.addNotes(graceBacklog); //add the notes to this chord.
+            graceBacklog.clear(); //clear the backlog.
+        }
         chord.addNote(newNote);
-        newNote.setParentChord(chord);
+        //newNote.setParentChord(chord); //not needed i think, since addNote now has note.setParentChord(this);
 
         measure.addChord(chord);
     }
@@ -62,7 +68,7 @@ public class ChordHandler {
 
         Chord chord = parentPart.getPreviousChord(newNote); //finding the chord that we must add newNote to.
         chord.addNote(newNote);
-        newNote.setParentChord(chord);
+        //newNote.setParentChord(chord); //not needed i think, since addNote now has note.setParentChord(this);
 
         //no measure.addChord here, because it's not a new chord.
     }

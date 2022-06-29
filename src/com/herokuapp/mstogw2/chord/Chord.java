@@ -29,6 +29,18 @@ public class Chord { //Chord with grace and/or standard notes
     public void addNote(Note note) {
         notes.add(note);
         addDuration(note.getDuration());
+        note.setParentChord(this);
+    }
+
+    public void addNotes(Note... newNotes) {
+        notes.addAll(Arrays.asList(newNotes));
+        notes.forEach((note) -> {addDuration(note.getDuration());
+        note.setParentChord(this);
+        }); //lambda to add the duration of multiple notes to this chord.
+    }
+
+    public void addNotes(ArrayList<Note> newNotes) {
+        notes.addAll(newNotes);
     }
 
     public void addDuration(double duration) {

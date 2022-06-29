@@ -9,7 +9,7 @@ public class MainProgram {
         final long startTime = System.currentTimeMillis();
 
         String file = "D:\\Coding Stuff\\MuseScore Parsing Experiments\\";
-        file += "Wisteria"; // change the file name here.
+        file += "hirari"; // change the file name here.
 
         FileParser fileParser = new FileParser();
         ScoreMaker scoreMaker = new ScoreMaker();
