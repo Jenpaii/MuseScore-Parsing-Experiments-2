@@ -2,16 +2,14 @@ package com.herokuapp.mstogw2.main;
 
 import org.w3c.dom.Document;
 
-import javax.xml.xpath.XPathExpressionException;
-
 public class MainProgram {
 
-    public static void main(String[] args) throws XPathExpressionException {
+    public static void main(String[] args) {
 
         final long startTime = System.currentTimeMillis();
 
         String file = "D:\\Coding Stuff\\MuseScore Parsing Experiments\\";
-        file += "Test"; // change the file name here.
+        file += "Wisteria"; // change the file name here.
 
         FileParser fileParser = new FileParser();
         ScoreMaker scoreMaker = new ScoreMaker();

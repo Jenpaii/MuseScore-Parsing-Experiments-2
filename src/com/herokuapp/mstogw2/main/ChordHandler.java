@@ -35,13 +35,36 @@ public class ChordHandler {
         boolean isGrace = getNoteIsGrace(note);
         boolean isChorded = getNoteIsChorded(note);
 
-        Chord chord = makeChord(parentPart, measure, noteVoice, noteStaff); //just temporary. Standard chord with no notes
+        Note newNote = isGrace ? new GraceNote(parentPart, measure, noteVoice, noteStaff, noteDuration, noteStep, noteAlter, noteOctave) :
+                new StandardNote(parentPart, measure, noteVoice, noteStaff, noteDuration, noteStep, noteAlter, noteOctave);
 
-        Note newNote = isGrace ? new GraceNote(parentPart, measure, noteVoice, noteStaff, chord, noteDuration, noteStep, noteAlter, noteOctave) :
-                new StandardNote(parentPart, measure, noteVoice, noteStaff, chord, noteDuration, noteStep, noteAlter, noteOctave);
+        parentPart.addNote(newNote); //adding notes to part, as well.
+        newNote.setNoteNumberInPart(parentPart.getNotesAmount()); //setting the number on the note as well. Starts on 1 for each part.
 
+        if (!isChorded) { //only do this for the first note of a chord
+            addNewChordToMeasure(newNote, parentPart, measure, noteVoice, noteStaff);
+        } else { //this note is chorded, meaning it belongs to the previous note's chord
+            addNoteToPreviousChord(newNote, parentPart);
+        }
+
+    }
+
+    public void addNewChordToMeasure(Note newNote, Part parentPart, Measure measure, int noteVoice, int noteStaff) {
+
+        Chord chord = makeChord(parentPart, measure, noteVoice, noteStaff);
         chord.addNote(newNote);
+        newNote.setParentChord(chord);
+
         measure.addChord(chord);
+    }
+
+    public void addNoteToPreviousChord(Note newNote, Part parentPart) {
+
+        Chord chord = parentPart.getPreviousChord(newNote); //finding the chord that we must add newNote to.
+        chord.addNote(newNote);
+        newNote.setParentChord(chord);
+
+        //no measure.addChord here, because it's not a new chord.
     }
 
     public Chord makeChord(Part parentPart, Measure measure, int noteVoice, int noteStaff, Note... notes) {

@@ -1,5 +1,7 @@
 package com.herokuapp.mstogw2.part;
 
+import com.herokuapp.mstogw2.chord.Chord;
+import com.herokuapp.mstogw2.chord.Note;
 import com.herokuapp.mstogw2.main.Measure;
 
 import java.util.HashMap;
@@ -13,12 +15,15 @@ public class Part {
     private int divisions; //helps normalise note durations. Real duration is duration divided by divisions.
     private Map<Integer, Measure> measures; //measures are numbered. Parts DO HAVE MEASURES.
 
+    int notesAmount = 0; //keeps track of how many notes there are.
+    private Map<Integer, Note> notes; //Perhaps parts should store all their notes?
+
     public Part(int scorePartId, int midiProgram, String instrumentName) {
         this.scorePartId = scorePartId;
         this.midiProgram = midiProgram;
         this.instrumentName = instrumentName;
-        //staves = new HashMap<>(); //removing staves for now and adding it as a variable for each chord
         measures = new HashMap<>();
+        notes = new HashMap<>();
     }
     public String getInstrumentName() {
         return instrumentName;
@@ -43,6 +48,30 @@ public class Part {
         return measures.get(previousMeasureNumber);
     }
 
+    public void addNote(Note note) {
+        notesAmount++;
+        notes.put(notesAmount, note);
+    }
+
+    public Note getPreviousNote(Note note) {
+        int noteNumberInPart = note.getNoteNumberInPart();
+        int previousNoteNumberInPart = noteNumberInPart-1;
+
+        if (previousNoteNumberInPart < 0) {
+            return null; //there is no note before this one.
+        }
+
+        return notes.get(previousNoteNumberInPart);
+    }
+
+    public Chord getPreviousChord(Note note) {
+        System.out.println(getPreviousNote(note));
+        return getPreviousNote(note).getParentChord();
+    }
+
+    public int getNotesAmount() {
+        return notesAmount;
+    }
     public void addMeasure(int measureNumber, Measure measure) {
         measures.put(measureNumber, measure);
     }
@@ -66,7 +95,7 @@ public class Part {
         StringBuilder mb = new StringBuilder();
         mb.append("{");
         for (Measure measure : measures.values()) {
-            mb.append("\n\t\t").append(measure.getMeasureNumber()).append("=").append(measure);
+            mb.append("\n\n\t\t").append(measure.getMeasureNumber()).append("=").append(measure);
         } mb.append("}");
         return mb.toString();
     }
